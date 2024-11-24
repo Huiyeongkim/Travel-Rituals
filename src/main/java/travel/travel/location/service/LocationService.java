@@ -20,6 +20,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,7 @@ public class LocationService {
     public List<LocationResDto> LocationReadDayList(Long planId, LocalDate day) {
         Plan plan =  planRepository.findById(planId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 계획입니다."));
-        List<LocationResDto> locations = locationRepository.findByPlanAndDay(plan, day).stream()
+        List<LocationResDto> locations = locationRepository.findByPlanAndDayOrderByScheduleOrderAsc(plan, day).stream()
                 .map(Location::fromEntity)
                 .collect(Collectors.toList());
         return locations;
@@ -62,12 +63,18 @@ public class LocationService {
         Plan plan =  planRepository.findById(planId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 계획입니다."));
         List<LocationResDto> dtos = new ArrayList<>();
+
         for (LocationUpdateReqDto locationUpdateReqDto : locationUpdateReqDtos) {
-            Location existingLocation =  locationRepository.findByLocationIdAndPlanAndDay(locationUpdateReqDto.getLocationId(), plan, day);
+            Location existingLocation =  locationRepository.findById(locationUpdateReqDto.getLocationId()).orElseThrow();
+            if (!existingLocation.getPlan().equals(plan) || !existingLocation.getDay().equals(day)) {
+                throw new IllegalArgumentException();
+            }
             existingLocation.updateLocation(locationUpdateReqDto.toEntity());
             Location savedLocation = locationRepository.save(existingLocation);
             dtos.add(savedLocation.fromEntity());
         }
+
+        dtos.sort(Comparator.comparing(LocationResDto::getScheduleOrder));
         return dtos;
     }
 
