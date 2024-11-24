@@ -1,11 +1,13 @@
 package travel.travel.plan.dto;
 
 import lombok.*;
+import travel.travel.location.dto.LocationResDto;
 import travel.travel.member.domain.Member;
 import travel.travel.plan.domain.Destination;
 import travel.travel.plan.domain.Plan;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -17,8 +19,6 @@ public class PlanCreateReqDto {
 
     private LocalDate startDate;
     private LocalDate endDate;
-
-/*    private List<LocationResDto> locations;*/
 
     private String destinationName;
 
