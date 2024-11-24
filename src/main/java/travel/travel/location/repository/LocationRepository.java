@@ -11,6 +11,5 @@ import java.util.List;
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
     List<Location> findByPlan(Plan plan);
-    List<Location> findByPlanAndDay(Plan plan, LocalDate day);
-    Location findByLocationIdAndPlanAndDay(Long id, Plan plan, LocalDate day);
+    List<Location> findByPlanAndDayOrderByScheduleOrderAsc(Plan plan, LocalDate day);
 }
