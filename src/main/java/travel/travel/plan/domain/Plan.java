@@ -3,6 +3,7 @@ package travel.travel.plan.domain;
 import lombok.*;
 import travel.travel.common.domain.BaseEntity;
 import travel.travel.member.domain.Member;
+import travel.travel.plan.dto.PlanResDto;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -34,9 +35,28 @@ public class Plan extends BaseEntity {
     private LocalDate endDate;
 
     private Long scheduleOrder;
-    private Long destinationId;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "destination_id")
+    private Destination destination;
 
-    /*Place place;*/
+    public PlanResDto fromEntity() {
+        return PlanResDto.builder()
+                .planId(this.planId)
+                .title(this.title)
+                .content(this.content)
+                .startDate(this.startDate)
+                .endDate(this.endDate)
+                .destinationId(destination.getDestinationId())
+                .destinationName(destination.getDestinationName())
+                .build();
+    }
 
+    public void updatePlan(Plan plan) {
+        this.title = plan.getTitle();
+        this.content = plan.getContent();
+        this.startDate = plan.getStartDate();
+        this.endDate = plan.getEndDate();
+        this.scheduleOrder = plan.getScheduleOrder();
+    }
 }

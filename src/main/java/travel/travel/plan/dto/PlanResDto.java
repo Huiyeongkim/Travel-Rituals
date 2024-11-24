@@ -11,7 +11,12 @@ import java.time.LocalDate;
 public class PlanResDto {
     private Long planId;
     private String title;
+    private String content;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Long descriptionId;
+
+/*    private List<LocationResDto> locations;*/
+
+    private Long destinationId;
+    private String destinationName;
 }
