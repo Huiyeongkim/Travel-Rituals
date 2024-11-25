@@ -2,22 +2,24 @@ package travel.travel.location.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import travel.travel.image.domain.Image;
+import travel.travel.image.dto.ImageResDto;
+import travel.travel.image.repository.ImageRepository;
+import travel.travel.image.service.ImageService;
 import travel.travel.location.domain.Location;
 import travel.travel.location.dto.LocationCreateReqDto;
 import travel.travel.location.dto.LocationResDto;
 import travel.travel.location.dto.LocationUpdateReqDto;
 import travel.travel.location.repository.LocationRepository;
-import travel.travel.member.domain.Member;
 import travel.travel.plan.domain.Plan;
-import travel.travel.plan.dto.PlanResDto;
-import travel.travel.plan.dto.PlanUpdateReqDto;
 import travel.travel.plan.repository.PlanRepository;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,12 +33,16 @@ import java.util.stream.Collectors;
 public class LocationService {
     private final LocationRepository locationRepository;
     private final PlanRepository planRepository;
+    private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
-
-    public LocationResDto LocationCreate(@Valid LocationCreateReqDto locationCreateReqDto) {
+    public LocationResDto LocationCreate(@Valid LocationCreateReqDto locationCreateReqDto, MultipartFile file) throws IOException {
         Plan plan = planRepository.findById(locationCreateReqDto.getPlanId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 계획입니다."));
-        Location savedLocation = locationRepository.save(locationCreateReqDto.toEntity(plan));
+        ImageResDto imageResDto = imageService.uploadFile(file);
+        Image image = imageRepository.save(imageResDto.toEntity());
+
+        Location savedLocation = locationRepository.save(locationCreateReqDto.toEntity(plan, image));
         return savedLocation.fromEntity();
     }
 

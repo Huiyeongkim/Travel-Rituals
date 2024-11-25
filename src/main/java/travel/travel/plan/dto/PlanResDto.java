@@ -1,10 +1,8 @@
 package travel.travel.plan.dto;
 
 import lombok.*;
-import travel.travel.location.dto.LocationResDto;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @NoArgsConstructor

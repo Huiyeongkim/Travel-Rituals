@@ -1,13 +1,11 @@
 package travel.travel.plan.dto;
 
 import lombok.*;
-import travel.travel.location.dto.LocationResDto;
 import travel.travel.member.domain.Member;
 import travel.travel.plan.domain.Destination;
 import travel.travel.plan.domain.Plan;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @NoArgsConstructor

@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import travel.travel.image.domain.Image;
+import travel.travel.image.dto.ImageResDto;
 import travel.travel.location.dto.LocationResDto;
 import travel.travel.plan.domain.Plan;
 
@@ -37,9 +39,19 @@ public class Location {
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id")
     private Plan plan;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private Image image;
+
     public LocationResDto fromEntity() {
+        ImageResDto imageResDto = ImageResDto.builder()
+                .imageId(image.getImageId())
+                .imageUrl(image.getImageUrl())
+                .build();
+
         return LocationResDto.builder()
                 .locationId(this.locationId)
                 .locationName(this.locationName)
@@ -49,6 +61,7 @@ public class Location {
                 .day(this.day)
                 .scheduleOrder(this.scheduleOrder)
                 .category(this.category)
+                .image(imageResDto)
                 .build();
     }
 

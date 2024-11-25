@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import travel.travel.image.dto.ImageResDto;
 import travel.travel.location.domain.Category;
-import travel.travel.location.domain.Location;
 
 import java.time.LocalDate;
 
@@ -22,5 +22,5 @@ public class LocationResDto {
     private LocalDate day;
     private Integer scheduleOrder;
     private Category category;
-
+    private ImageResDto image;
 }
