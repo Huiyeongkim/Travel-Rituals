@@ -28,21 +28,21 @@ public class LocationCreateReqDto {
     private String address;
 
     private LocalDate day;
-    private Integer scheduleOrder;
+   /* private Integer scheduleOrder;*/
 
     @Enumerated(EnumType.STRING)
     private Category category;
 
     private Long planId;
 
-    public Location toEntity(Plan plan, Image image) {
+    public Location toEntity(Plan plan, Image image,Integer newOrderNumber) {
         return Location.builder()
                 .locationName(this.locationName)
                 .latitude(this.latitude)
                 .longitude(this.longitude)
                 .address(this.address)
                 .day(this.day)
-                .scheduleOrder(this.scheduleOrder)
+                .scheduleOrder(newOrderNumber)
                 .category(this.category)
                 .plan(plan)
                 .image(image)
