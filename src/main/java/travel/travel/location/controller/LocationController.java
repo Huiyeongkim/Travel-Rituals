@@ -6,12 +6,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import travel.travel.common.dto.CommonResDto;
 import travel.travel.location.dto.LocationCreateReqDto;
 import travel.travel.location.dto.LocationResDto;
 import travel.travel.location.dto.LocationUpdateReqDto;
 import travel.travel.location.service.LocationService;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,8 +25,10 @@ public class LocationController {
     private final LocationService locationService;
 
     @PostMapping
-    public ResponseEntity<CommonResDto> LocationCreate(@RequestBody LocationCreateReqDto locationCreateReqDto) {
-        LocationResDto dto = locationService.LocationCreate(locationCreateReqDto);
+    public ResponseEntity<CommonResDto> LocationCreate(
+            @RequestPart LocationCreateReqDto locationCreateReqDto,
+            @RequestPart(required = false) MultipartFile file) throws IOException {
+        LocationResDto dto = locationService.LocationCreate(locationCreateReqDto, file);
         return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "지역저장이 성공적으로 되었습니다.", dto), HttpStatus.CREATED);
     }
 

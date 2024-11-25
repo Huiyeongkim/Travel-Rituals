@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+import travel.travel.image.domain.Image;
 import travel.travel.location.domain.Category;
 import travel.travel.location.domain.Location;
 import travel.travel.plan.domain.Plan;
@@ -33,7 +35,7 @@ public class LocationCreateReqDto {
 
     private Long planId;
 
-    public Location toEntity(Plan plan) {
+    public Location toEntity(Plan plan, Image image) {
         return Location.builder()
                 .locationName(this.locationName)
                 .latitude(this.latitude)
@@ -43,6 +45,7 @@ public class LocationCreateReqDto {
                 .scheduleOrder(this.scheduleOrder)
                 .category(this.category)
                 .plan(plan)
+                .image(image)
                 .build();
     }
 }

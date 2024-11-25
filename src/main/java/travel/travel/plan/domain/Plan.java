@@ -20,7 +20,6 @@ public class Plan extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "plan_Id")
     private Long planId;
 
     @Column(length = 100)
