@@ -2,6 +2,8 @@ package travel.travel.image.domain;
 
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
+import travel.travel.image.dto.ImageResDto;
+import travel.travel.location.dto.LocationResDto;
 
 import javax.persistence.*;
 
@@ -19,4 +21,11 @@ public class Image {
     private Long imageId;
 
     private String imageUrl;
+
+    public ImageResDto fromEntity() {
+        return ImageResDto.builder()
+                .imageId(this.imageId)
+                .imageUrl(this.imageUrl)
+                .build();
+    }
 }

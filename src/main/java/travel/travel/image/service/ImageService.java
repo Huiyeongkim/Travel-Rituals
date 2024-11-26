@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import travel.travel.image.domain.Image;
 import travel.travel.image.dto.ImageResDto;
 import travel.travel.image.repository.ImageRepository;
 
@@ -42,9 +43,9 @@ public class ImageService {
             throw new IOException("S3 업로드 실패: " + e.getMessage(), e);
         }
 
-        String url = s3Client.utilities().getUrl(builder -> builder.bucket(bucket).key(originalFilename)).toString();
-        return ImageResDto.builder()
-                .imageUrl(url)
-                .build();
+        String url = s3Client.utilities().getUrl(builder -> builder.bucket(bucket).key(uniqueFileName)).toString();
+        Image image = Image.builder().imageUrl(url).build();
+        imageRepository.save(image);
+        return image.fromEntity();
     }
 }

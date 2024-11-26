@@ -33,13 +33,15 @@ public class LocationService {
     private final LocationRepository locationRepository;
     private final PlanRepository planRepository;
     private final ImageService imageService;
-    private final ImageRepository imageRepository;
 
     public LocationResDto LocationCreate(@Valid LocationCreateReqDto locationCreateReqDto, MultipartFile file) throws IOException {
         Plan plan = planRepository.findById(locationCreateReqDto.getPlanId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 계획입니다."));
         ImageResDto imageResDto = imageService.uploadFile(file);
-        Image image = imageRepository.save(imageResDto.toEntity());
+        Image image =  Image.builder()
+                .imageId(imageResDto.getImageId())
+                .imageUrl(imageResDto.getImageUrl())
+                .build();
 
         Location location = locationRepository.findTopByPlanAndDayOrderByScheduleOrderDesc(plan, locationCreateReqDto.getDay());
         Integer lastOrderNumber = 0;
