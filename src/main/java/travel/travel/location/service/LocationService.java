@@ -22,7 +22,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,15 +33,24 @@ public class LocationService {
     private final LocationRepository locationRepository;
     private final PlanRepository planRepository;
     private final ImageService imageService;
-    private final ImageRepository imageRepository;
 
     public LocationResDto LocationCreate(@Valid LocationCreateReqDto locationCreateReqDto, MultipartFile file) throws IOException {
         Plan plan = planRepository.findById(locationCreateReqDto.getPlanId())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 계획입니다."));
         ImageResDto imageResDto = imageService.uploadFile(file);
-        Image image = imageRepository.save(imageResDto.toEntity());
+        Image image =  Image.builder()
+                .imageId(imageResDto.getImageId())
+                .imageUrl(imageResDto.getImageUrl())
+                .build();
 
-        Location savedLocation = locationRepository.save(locationCreateReqDto.toEntity(plan, image));
+        Location location = locationRepository.findTopByPlanAndDayOrderByScheduleOrderDesc(plan, locationCreateReqDto.getDay());
+        Integer lastOrderNumber = 0;
+        if (location != null) {
+            lastOrderNumber = location.getScheduleOrder();
+        }
+        Integer newOrderNumber = lastOrderNumber + 1;
+
+        Location savedLocation = locationRepository.save(locationCreateReqDto.toEntity(plan, image, newOrderNumber));
         return savedLocation.fromEntity();
     }
 
@@ -80,7 +88,14 @@ public class LocationService {
             dtos.add(savedLocation.fromEntity());
         }
 
-        dtos.sort(Comparator.comparing(LocationResDto::getScheduleOrder));
+        checkForDuplicateScheduleOrder(dtos);
+        List<Location> locations = locationRepository.findByPlanAndDayOrderByScheduleOrderAsc(plan, day);
+        autoScheduleOrder(locations);
+
+        dtos = locationRepository.findByPlanAndDayOrderByScheduleOrderAsc(plan, day).stream()
+                .map(Location::fromEntity)
+                .collect(Collectors.toList());
+
         return dtos;
     }
 
@@ -88,7 +103,31 @@ public class LocationService {
         Location existingLocation = locationRepository.findById(locationId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 위치입니다."));
         locationRepository.delete(existingLocation);
+        Plan plan =  planRepository.findById(existingLocation.getPlan().getPlanId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않은 계획입니다."));
+
+        List<Location> locations = locationRepository.findByPlanAndDayOrderByScheduleOrderAsc(plan, existingLocation.getDay());
+        autoScheduleOrder(locations);
+
         return existingLocation.fromEntity();
     }
 
+    private void checkForDuplicateScheduleOrder(List<LocationResDto> dtos) {
+        List<Integer> orderList = dtos.stream()
+                .map(LocationResDto::getScheduleOrder)
+                .collect(Collectors.toList());
+
+        long distinctCount = orderList.stream().distinct().count();
+        if (distinctCount != orderList.size()) {
+            throw new IllegalArgumentException("중복된 scheduleOrder 값이 있습니다. 순서를 다시 확인해주세요.");
+        }
+    }
+
+    private void autoScheduleOrder(List<Location> locations) {
+        Integer newOrderNumber = 1;
+        for (Location location : locations) {
+            location.updateLocation(Location.builder().scheduleOrder(newOrderNumber++).build());
+            locationRepository.save(location);
+        }
+    }
 }
