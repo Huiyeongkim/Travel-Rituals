@@ -9,7 +9,6 @@ import travel.travel.common.dto.CommonResDto;
 import travel.travel.plan.dto.PlanCreateReqDto;
 import travel.travel.plan.dto.PlanResDto;
 import travel.travel.plan.dto.PlanUpdateReqDto;
-import travel.travel.plan.repository.PlanRepository;
 import travel.travel.plan.service.PlanService;
 
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.List;
 @RequestMapping("/plan")
 public class PlanController {
     private final PlanService planService;
-    private final PlanRepository planRepository;
 
     @PostMapping
     public ResponseEntity<CommonResDto> planCreate(@RequestBody PlanCreateReqDto planCreateReqDto) {
