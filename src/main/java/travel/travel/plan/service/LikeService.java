@@ -43,12 +43,12 @@ public class LikeService {
             redisTemplate.opsForSet().remove(likeUserKey, member.getId());
             redisTemplate.opsForValue().decrement(likeCountKey);
             return false;
-        } else {
-            // 좋아요 추가
-            redisTemplate.opsForSet().add(likeUserKey, member.getId());
-            redisTemplate.opsForValue().increment(likeCountKey);
-            return true;
         }
+
+        // 좋아요 추가
+        redisTemplate.opsForSet().add(likeUserKey, member.getId());
+        redisTemplate.opsForValue().increment(likeCountKey);
+        return true;
     }
 
     // 좋아요 개수 조회
