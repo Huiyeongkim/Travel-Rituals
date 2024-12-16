@@ -19,14 +19,14 @@ public class LikeController {
     public ResponseEntity<CommonResDto> toggleLike(@PathVariable Long postId) {
         boolean like = likeService.toggleLike(postId);
         if (like) {
-            return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "좋아요가 성공적으로 되었습니다.", null), HttpStatus.CREATED);
+            return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "좋아요가 성공적으로 되었습니다.", null), HttpStatus.OK);
         }
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "좋아요취소가 성공적으로 되었습니다.", null), HttpStatus.CREATED);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "좋아요취소가 성공적으로 되었습니다.", null), HttpStatus.OK);
     }
 
     @GetMapping("/{postId}/count")
     public ResponseEntity<CommonResDto> getLikeCount(@PathVariable Long postId) {
         Long likeCount = likeService.getLikeCount(postId);
-        return new ResponseEntity<>(new CommonResDto(HttpStatus.CREATED, "좋아요개수조회가 성공적으로 되었습니다.", likeCount), HttpStatus.CREATED);
+        return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "좋아요개수조회가 성공적으로 되었습니다.", likeCount), HttpStatus.OK);
     }
 }
